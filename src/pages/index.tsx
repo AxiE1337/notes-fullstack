@@ -1,16 +1,15 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { Button, Loader, Textarea, TextInput } from '@mantine/core'
-import { getCookie } from 'cookies-next'
 import { useEffect, useRef, useState } from 'react'
+import { useStore } from '../store/userstore'
 import manageNotes from '../lib/manageNotes'
 import Note from '../components/note'
-
-const jwt = getCookie('jwt') as string
 
 const Home: NextPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [notes, setNotes] = useState<any>([])
+  const isLoggedIn = useStore((state) => state.isLoggedIn)
   const inputRefTitle = useRef<any>()
   const inputRefContent = useRef<any>()
 
@@ -21,7 +20,7 @@ const Home: NextPage = () => {
   )
 
   const fetch = async () => {
-    const data = await manageNotes.get(jwt)
+    const data = await manageNotes.get()
     setNotes(data)
     setIsLoading(false)
   }
@@ -33,8 +32,7 @@ const Home: NextPage = () => {
     ) {
       const data = await manageNotes.add(
         inputRefTitle.current.value,
-        inputRefContent.current.value,
-        jwt
+        inputRefContent.current.value
       )
       setNotes(data)
       inputRefTitle.current.value = ''
@@ -43,7 +41,12 @@ const Home: NextPage = () => {
   }
 
   const deleteNote = async (id: number) => {
-    const data = await manageNotes.delete(id, jwt)
+    const data = await manageNotes.delete(id)
+    setNotes(data)
+  }
+
+  const updateNote = async (id: number, title: string, content: string) => {
+    const data = await manageNotes.udpate(id, title, content)
     setNotes(data)
   }
 
@@ -82,6 +85,7 @@ const Home: NextPage = () => {
           uppercase
           className='mt-3'
           onClick={addHandler}
+          disabled={!isLoggedIn}
         >
           add
         </Button>
@@ -91,6 +95,9 @@ const Home: NextPage = () => {
               key={note.id}
               note={note}
               deleteNote={(noteId) => deleteNote(noteId)}
+              updateNote={(noteId, title, content) =>
+                updateNote(noteId, title, content)
+              }
             />
           ))}
         </div>

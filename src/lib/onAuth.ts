@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getCookie, removeCookies } from 'cookies-next'
+import { removeCookies } from 'cookies-next'
 import { useRouter } from 'next/router'
 import { useStore } from '../store/userstore'
 
@@ -10,7 +10,6 @@ interface Credentials {
 
 export const onAuth = () => {
   const router = useRouter()
-  const token = getCookie('jwt')
   const setUser = useStore((state) => state.setUser)
   const setIsLoggedIn = useStore((state) => state.setIsLoggedIn)
 
@@ -56,13 +55,10 @@ export const onAuth = () => {
 
   // check if the user is logged in
   const isAuthenticated = async () => {
-    if (!token) {
-      return 'Youre not logged in'
-    }
     try {
       const data = await axios.get('/api/users', {
         headers: {
-          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
         },
       })
       setUser(data.data)

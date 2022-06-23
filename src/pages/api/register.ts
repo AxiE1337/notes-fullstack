@@ -16,14 +16,6 @@ export default async function handler(
         id: uId,
         username: username,
         password: password,
-        notes: {
-          createMany: {
-            data: {
-              title: 'new title',
-              content: 'new content',
-            },
-          },
-        },
       },
       include: {
         notes: true,

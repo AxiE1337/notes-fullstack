@@ -21,7 +21,7 @@ export default function register() {
   const router = useRouter()
 
   const registerHandler = () => {
-    if (credentials.username.length > 3 && credentials.password.length > 5) {
+    if (credentials.username.length > 4 && credentials.password.length > 5) {
       register(credentials)
       setCredentials({
         username: '',
@@ -33,6 +33,7 @@ export default function register() {
 
   if (isLoggedIn) {
     router.push('/')
+    return <div></div>
   }
 
   return (
@@ -74,7 +75,14 @@ export default function register() {
       >
         Register
       </Button>
-      <Button variant='subtle' color='teal' radius='xs' size='xs' compact>
+      <Button
+        variant='subtle'
+        color='teal'
+        radius='xs'
+        size='xs'
+        compact
+        onClick={() => router.push('/auth/login')}
+      >
         have an existing account?
       </Button>
     </div>

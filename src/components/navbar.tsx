@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '@mantine/core'
 import { useRouter } from 'next/router'
+import { onAuth } from '../lib/onAuth'
 
 interface Props {
   isLoggedIn: boolean
@@ -11,6 +12,7 @@ interface Props {
 
 export default function Navbar({ isLoggedIn, user }: Props) {
   const router = useRouter()
+  const { logout } = onAuth()
 
   return (
     <div className='flex items-center justify-between w-sceen h-10 bg-gradient-to-r from-indigo-300'>
@@ -25,29 +27,35 @@ export default function Navbar({ isLoggedIn, user }: Props) {
       >
         Notes
       </Button>
-      {!!user.username && (
-        <div className='flex mr-4'>
-          <h1 className='mr-4 select-none'>{user.username}</h1>
 
-          {!isLoggedIn && (
-            <Button
-              variant='subtle'
-              color='dark'
-              radius='xs'
-              compact
-              uppercase
-              onClick={() => router.push('/auth/login')}
-            >
-              Log in
-            </Button>
-          )}
-          {isLoggedIn && (
-            <Button variant='subtle' color='dark' radius='xs' compact uppercase>
-              Log out
-            </Button>
-          )}
-        </div>
-      )}
+      <div className='flex mr-4'>
+        <h1 className='mr-4 select-none'>{user.username}</h1>
+
+        {!isLoggedIn && (
+          <Button
+            variant='subtle'
+            color='dark'
+            radius='xs'
+            compact
+            uppercase
+            onClick={() => router.push('/auth/login')}
+          >
+            Log in
+          </Button>
+        )}
+        {isLoggedIn && (
+          <Button
+            variant='subtle'
+            color='dark'
+            radius='xs'
+            compact
+            uppercase
+            onClick={() => logout()}
+          >
+            Log out
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

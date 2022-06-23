@@ -6,10 +6,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  let authorization = req.headers.authorization || null
+  let authorization = req.headers.cookie
   const { title, content, id } = req.body
 
-  const decodedToken = jwt.decode(authorization?.split(' ')[1] as string) as {
+  const decodedToken = jwt.decode(authorization?.slice(4) as string) as {
     [key: string]: string
   }
 
@@ -38,6 +38,22 @@ export default async function handler(
     await prisma.note.delete({
       where: { id: id },
     })
+    const notes = await prisma.note.findMany({
+      where: { userId: Number(decodedToken.id) },
+    })
+    return res.status(200).json({ notes })
+  }
+
+  if (req.method === 'PUT' && decodedToken) {
+    const { title, content, id } = req.body.data
+    await prisma.note.update({
+      where: { id: id },
+      data: {
+        title: title,
+        content: content,
+      },
+    })
+
     const notes = await prisma.note.findMany({
       where: { userId: Number(decodedToken.id) },
     })

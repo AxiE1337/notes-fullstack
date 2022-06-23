@@ -6,9 +6,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  let authorization = req.headers.authorization || null
+  let authorization = req.headers.cookie
 
-  const decodedToken = jwt.decode(authorization?.split(' ')[1] as string) as {
+  const decodedToken = jwt.decode(authorization?.slice(4) as string) as {
     [key: string]: string
   }
 
@@ -18,5 +18,5 @@ export default async function handler(
     })
     return res.status(200).json({ username: user?.username })
   }
-  return res.status(200).json({ status: 'error' })
+  return res.status(400).json({ status: 'error' })
 }
