@@ -81,7 +81,7 @@ export default function register() {
 
   return (
     <div className='flex flex-col min-h-screen items-center justify-center gap-1'>
-      <form className='flex flex-col w-2/4 gap-3'>
+      <form className='flex flex-col w-2/4 md:w-4/5 gap-3'>
         <TextField
           label='Enter your username'
           variant='filled'

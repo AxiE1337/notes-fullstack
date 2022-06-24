@@ -82,9 +82,9 @@ const Home: NextPage = () => {
         <meta name='description' content='Notes app' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <h1 className='text-3xl font-bold'>Notes</h1>
+      <h1 className='text-3xl font-bold mt-2'>Notes</h1>
 
-      <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 border'>
+      <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 md:w-4/5 border'>
         <form className='flex flex-col w-full gap-2 p-2'>
           <TextField
             variant='standard'
