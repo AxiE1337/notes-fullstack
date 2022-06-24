@@ -2,13 +2,13 @@ import '../../styles/globals.css'
 import type { AppProps } from 'next/app'
 import Layout from '../components/layout'
 import { useEffect } from 'react'
-import { onAuth } from '../lib/onAuth'
+import { useAuth } from '../hooks/useAuth'
 
 export default function MyApp({
   Component,
   pageProps: { ...pageProps },
 }: AppProps) {
-  const { isAuthenticated } = onAuth()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     return () => {

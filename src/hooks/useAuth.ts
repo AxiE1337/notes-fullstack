@@ -8,7 +8,7 @@ interface Credentials {
   password: string
 }
 
-export const onAuth = () => {
+export const useAuth = () => {
   const router = useRouter()
   const setUser = useStore((state) => state.setUser)
   const setIsLoggedIn = useStore((state) => state.setIsLoggedIn)

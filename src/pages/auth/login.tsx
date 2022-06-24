@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
-import { onAuth } from '../../lib/onAuth'
+import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
 import { useStore } from '../../store/userstore'
 
@@ -10,12 +10,12 @@ interface Credentials {
   password: string
 }
 
-export default function login() {
+export default function Login() {
   const [credentials, setCredentials] = useState<Credentials>({
     username: '',
     password: '',
   })
-  const { login } = onAuth()
+  const { login } = useAuth()
   const isLoggedIn = useStore((state) => state.isLoggedIn)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')

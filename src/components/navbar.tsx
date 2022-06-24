@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
-import { onAuth } from '../lib/onAuth'
+import { useAuth } from '../hooks/useAuth'
 
 interface Props {
   isLoggedIn: boolean
@@ -12,7 +12,7 @@ interface Props {
 
 export default function Navbar({ isLoggedIn, user }: Props) {
   const router = useRouter()
-  const { logout } = onAuth()
+  const { logout } = useAuth()
 
   return (
     <div className='flex items-center justify-between w-sceen h-10 bg-gradient-to-r from-indigo-300'>
