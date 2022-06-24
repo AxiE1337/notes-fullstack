@@ -19,7 +19,11 @@ export default async function handler(
 
   if (!!user) {
     const { id } = user
-    const jwtoken = jwt.sign({ id, username }, process.env.JWT_SECRET as string)
+    const jwtoken = jwt.sign(
+      { id, username },
+      process.env.JWT_SECRET as string,
+      { expiresIn: 60 * 60 }
+    )
 
     setCookies('jwt', jwtoken, { req, res, maxAge: 60 * 6 * 24 })
 

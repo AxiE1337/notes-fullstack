@@ -1,53 +1,68 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { Button, Loader, Textarea, TextInput } from '@mantine/core'
-import { useEffect, useRef, useState } from 'react'
+import { TextField, CircularProgress } from '@mui/material'
+import { LoadingButton as Button } from '@mui/lab'
+import { useEffect, useState } from 'react'
 import { useStore } from '../store/userstore'
 import manageNotes from '../lib/manageNotes'
 import Note from '../components/note'
 
+interface LoadingState {
+  isLoading: boolean
+  addBtn: boolean
+  editBtn: boolean
+  deleteBtn: boolean
+}
+
 const Home: NextPage = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [notes, setNotes] = useState<any>([])
+  const [loadingState, setLoadingState] = useState<LoadingState>({
+    isLoading: true,
+    editBtn: false,
+    addBtn: false,
+    deleteBtn: false,
+  })
+  // const [sortValue, setSortValue] = useState<string>('order')
+  const [notes, setNotes] = useState<any[]>([])
   const isLoggedIn = useStore((state) => state.isLoggedIn)
-  const inputRefTitle = useRef<any>()
-  const inputRefContent = useRef<any>()
+  const [inputTitle, setInputTitle] = useState<string>('')
+  const [inputContent, setInputContent] = useState<string>('')
 
   const loading = (
     <div className='flex h-screen items-center justify-center'>
-      <Loader color='green' />
+      <CircularProgress />
     </div>
   )
 
   const fetch = async () => {
     const data = await manageNotes.get()
     setNotes(data)
-    setIsLoading(false)
+    setLoadingState({ ...loadingState, isLoading: false })
   }
 
   const addHandler = async () => {
-    if (
-      inputRefTitle.current.value.length > 1 &&
-      inputRefContent.current.value.length > 5
-    ) {
-      const data = await manageNotes.add(
-        inputRefTitle.current.value,
-        inputRefContent.current.value
-      )
+    const maxLength = inputTitle.length > 15
+    if (inputTitle.length > 1 && !maxLength && inputContent.length > 5) {
+      setLoadingState({ ...loadingState, addBtn: true })
+      const data = await manageNotes.add(inputTitle, inputContent)
       setNotes(data)
-      inputRefTitle.current.value = ''
-      inputRefContent.current.value = ''
+      setInputTitle('')
+      setInputContent('')
+      setLoadingState({ ...loadingState, addBtn: false })
     }
   }
 
   const deleteNote = async (id: number) => {
+    setLoadingState({ ...loadingState, deleteBtn: true })
     const data = await manageNotes.delete(id)
     setNotes(data)
+    setLoadingState({ ...loadingState, deleteBtn: false })
   }
 
   const updateNote = async (id: number, title: string, content: string) => {
+    setLoadingState({ ...loadingState, editBtn: true })
     const data = await manageNotes.udpate(id, title, content)
     setNotes(data)
+    setLoadingState({ ...loadingState, editBtn: false })
   }
 
   useEffect(() => {
@@ -56,7 +71,7 @@ const Home: NextPage = () => {
     }
   }, [])
 
-  if (isLoading) {
+  if (loadingState.isLoading) {
     return loading
   }
 
@@ -70,36 +85,45 @@ const Home: NextPage = () => {
       <h1 className='text-3xl font-bold'>Notes</h1>
 
       <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 border'>
-        <TextInput
-          placeholder='text...'
-          label='Title'
-          radius='xs'
-          ref={inputRefTitle}
-        />
-        <Textarea label='Content' ref={inputRefContent} />
-        <Button
-          variant='subtle'
-          color='dark'
-          radius='xs'
-          compact
-          uppercase
-          className='mt-3'
-          onClick={addHandler}
-          disabled={!isLoggedIn}
-        >
-          add
-        </Button>
+        <form className='flex flex-col w-full gap-2 p-2'>
+          <TextField
+            variant='standard'
+            label='Title'
+            value={inputTitle}
+            onChange={(e: any) => setInputTitle(e.target.value)}
+          />
+          <TextField
+            variant='standard'
+            label='Content'
+            value={inputContent}
+            onChange={(e: any) => setInputContent(e.target.value)}
+          />
+          <Button
+            className='mt-3'
+            loading={loadingState.addBtn}
+            onClick={addHandler}
+            disabled={!isLoggedIn}
+          >
+            add
+          </Button>
+        </form>
         <div className='flex flex-col items-start justify-start w-full'>
-          {notes.map((note: any) => (
-            <Note
-              key={note.id}
-              note={note}
-              deleteNote={(noteId) => deleteNote(noteId)}
-              updateNote={(noteId, title, content) =>
-                updateNote(noteId, title, content)
-              }
-            />
-          ))}
+          {notes
+            .sort((a: any, b: any) => b.id - a.id)
+            .map((note: any) => (
+              <Note
+                key={note.id}
+                note={note}
+                loadingState={{
+                  editBtn: loadingState.editBtn,
+                  deleteBtn: loadingState.deleteBtn,
+                }}
+                deleteNote={(noteId) => deleteNote(noteId)}
+                updateNote={(noteId, title, content) =>
+                  updateNote(noteId, title, content)
+                }
+              />
+            ))}
         </div>
       </div>
     </div>

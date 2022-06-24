@@ -1,4 +1,6 @@
-import { Button, TextInput } from '@mantine/core'
+import { TextField, IconButton, CircularProgress } from '@mui/material'
+import { LoadingButton as Button } from '@mui/lab'
+import DeleteIcon from '@mui/icons-material/Delete'
 import React, { useState } from 'react'
 import Moment from 'react-moment'
 
@@ -11,11 +13,20 @@ interface NoteTypes {
     updatedAt: string
     userId: number
   }
+  loadingState: {
+    deleteBtn: boolean
+    editBtn: boolean
+  }
   deleteNote: (id: number) => void
   updateNote: (id: number, title: string, content: string) => void
 }
 
-export default function Note({ note, deleteNote, updateNote }: NoteTypes) {
+export default function Note({
+  note,
+  deleteNote,
+  updateNote,
+  loadingState,
+}: NoteTypes) {
   const [edit, setEdit] = useState<boolean>(false)
   const [titleValue, setTitleValue] = useState<string>(note.title)
   const [contentValue, setContentValue] = useState<string>(note.content)
@@ -29,40 +40,38 @@ export default function Note({ note, deleteNote, updateNote }: NoteTypes) {
   }
 
   if (edit) {
+    const isChanged = note.title === titleValue && note.content === contentValue
     return (
       <div className='flex flex-col gap-2 pl-10 p-4 mt-4 bg-zinc-300 w-full'>
         <h1>Editing</h1>
-        <TextInput
+        <TextField
           placeholder='Title'
           value={titleValue}
           onChange={(e: any) => setTitleValue(e.target.value)}
         />
-        <TextInput
+        <TextField
           placeholder='Content'
           value={contentValue}
           onChange={(e: any) => setContentValue(e.target.value)}
         />
-        <Moment format='YYYY/MM/DD'>{note.createdAt}</Moment>
-        <Button
-          variant='subtle'
-          color='dark'
-          radius='xs'
-          compact
-          uppercase
-          className='mt-3'
-          onClick={updateHandler}
-        >
-          update
-        </Button>
+        {!isChanged ? (
+          <Button className='mt-3' onClick={updateHandler}>
+            update
+          </Button>
+        ) : (
+          <Button onClick={() => setEdit(false)}>Close</Button>
+        )}
       </div>
     )
   }
 
   return (
-    <div className='flex flex-col gap-2 pl-10 p-4 mt-4 bg-zinc-300 w-full'>
-      <h1>{note.title}</h1>
-      <p>{note.content}</p>
-      <Moment format='YYYY/MM/DD'>{note.createdAt}</Moment>
+    <div className='flex flex-col gap-2 p-4 mt-4 bg-zinc-300 w-full'>
+      <h1 className='text-3xl'>{note.title}</h1>
+      <p className='break-words'>{note.content}</p>
+      <p>
+        {'Created '} <Moment format='YYYY/MM/DD'>{note.createdAt}</Moment>
+      </p>
       {!isUpdated && (
         <p className='text-xs'>
           updated{' '}
@@ -72,27 +81,26 @@ export default function Note({ note, deleteNote, updateNote }: NoteTypes) {
           ago
         </p>
       )}
-      <Button
-        variant='subtle'
-        color='red'
-        radius='xs'
-        compact
-        uppercase
-        className='mt-3'
-        onClick={() => deleteNote(note.id)}
-      >
-        delete
-      </Button>
-      <Button
-        variant='subtle'
-        color='dark'
-        radius='xs'
-        compact
-        className='mt-3'
-        onClick={() => setEdit((prev) => !prev)}
-      >
-        edit
-      </Button>
+      <div className='ml-auto'>
+        <Button
+          className='mt-3'
+          loading={loadingState.editBtn}
+          onClick={() => setEdit((prev) => !prev)}
+        >
+          edit
+        </Button>
+        <IconButton
+          className='mt-3'
+          color='error'
+          onClick={() => deleteNote(note.id)}
+        >
+          {loadingState.deleteBtn ? (
+            <CircularProgress color='inherit' size={15} />
+          ) : (
+            <DeleteIcon />
+          )}
+        </IconButton>
+      </div>
     </div>
   )
 }

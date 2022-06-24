@@ -22,7 +22,9 @@ export default async function handler(
       },
     })
     const { id } = newUser
-    const token = jwt.sign({ id, username }, process.env.JWT_SECRET as string)
+    const token = jwt.sign({ id, username }, process.env.JWT_SECRET as string, {
+      expiresIn: 60 * 60,
+    })
 
     setCookies('jwt', token, { req, res, maxAge: 60 * 6 * 24 })
 

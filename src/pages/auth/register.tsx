@@ -1,4 +1,5 @@
-import { PasswordInput, Button, TextInput } from '@mantine/core'
+import { TextField } from '@mui/material'
+import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
 import { onAuth } from '../../lib/onAuth'
 import { useStore } from '../../store/userstore'
@@ -9,6 +10,12 @@ interface Credentials {
   password: string
   password2: string
 }
+interface Error {
+  message: string
+  passMatch: boolean
+  passLength: boolean
+  userLength: boolean
+}
 
 export default function register() {
   const [credentials, setCredentials] = useState<Credentials>({
@@ -18,15 +25,51 @@ export default function register() {
   })
   const { register } = onAuth()
   const isLoggedIn = useStore((state) => state.isLoggedIn)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<Error>({
+    message: '',
+    passMatch: true,
+    passLength: false,
+    userLength: false,
+  })
   const router = useRouter()
 
-  const registerHandler = () => {
-    if (credentials.username.length > 4 && credentials.password.length > 5) {
-      register(credentials)
+  const registerHandler = async () => {
+    const confirmed = credentials.password === credentials.password2
+    if (
+      credentials.username.length > 5 &&
+      credentials.password.length > 5 &&
+      confirmed
+    ) {
+      setIsLoading(true)
+      await register(credentials)
+      setError({
+        message: '',
+        passMatch: true,
+        passLength: false,
+        userLength: false,
+      })
       setCredentials({
         username: '',
         password: '',
         password2: '',
+      })
+      setIsLoading(false)
+    } else {
+      const passMatch = !confirmed ? 'Passwords doesnt match!' : ''
+      const userLength =
+        credentials.username.length < 6
+          ? 'Username must be at least 6 characters'
+          : ''
+      const passLength =
+        credentials.password.length < 6
+          ? 'Password must be at least 6 characters'
+          : ''
+      setError({
+        message: `${passLength} ${userLength} ${passMatch}`,
+        passLength: !!userLength,
+        userLength: !!userLength,
+        passMatch: !!passMatch,
       })
     }
   }
@@ -39,50 +82,41 @@ export default function register() {
   return (
     <div className='flex flex-col min-h-screen items-center justify-center gap-1'>
       <form className='flex flex-col w-2/4 gap-3'>
-        <TextInput
-          placeholder='Your username'
-          error=''
+        <TextField
           label='Enter your username'
-          required
+          variant='filled'
           id='16'
+          error={error.userLength}
           onChange={(e: any) =>
             setCredentials({ ...credentials, username: e.target.value })
           }
         />
-        <PasswordInput
-          placeholder='Password'
-          required
+        <TextField
           label='Password'
+          variant='filled'
+          type='password'
           id='17'
+          error={error.passLength && error.passMatch}
           onChange={(e: any) =>
             setCredentials({ ...credentials, password: e.target.value })
           }
         />
-        <PasswordInput
-          placeholder='Password'
+        <TextField
           label='Confirm password'
-          required
+          type='password'
+          variant='filled'
           id='15'
+          error={error.passLength && error.passMatch}
+          onChange={(e: any) =>
+            setCredentials({ ...credentials, password2: e.target.value })
+          }
         />
+        <p>{error.message}</p>
+        <Button loading={isLoading} onClick={registerHandler}>
+          Register
+        </Button>
       </form>
-      <Button
-        variant='subtle'
-        color='gray'
-        radius='xs'
-        size='md'
-        uppercase
-        onClick={registerHandler}
-      >
-        Register
-      </Button>
-      <Button
-        variant='subtle'
-        color='teal'
-        radius='xs'
-        size='xs'
-        compact
-        onClick={() => router.push('/auth/login')}
-      >
+      <Button onClick={() => router.push('/auth/login')}>
         have an existing account?
       </Button>
     </div>

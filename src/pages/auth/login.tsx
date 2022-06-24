@@ -1,4 +1,5 @@
-import { PasswordInput, Button, TextInput } from '@mantine/core'
+import { TextField } from '@mui/material'
+import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
 import { onAuth } from '../../lib/onAuth'
 import { useRouter } from 'next/router'
@@ -16,12 +17,19 @@ export default function login() {
   })
   const { login } = onAuth()
   const isLoggedIn = useStore((state) => state.isLoggedIn)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
   const router = useRouter()
 
-  const loginhandler = () => {
-    if ((credentials.username !== '', credentials.password !== '')) {
-      login(credentials)
+  const loginhandler = async () => {
+    if (credentials.username !== '' && credentials.password !== '') {
+      setIsLoading(true)
+      const isSuccessful = await login(credentials)
       setCredentials({ username: '', password: '' })
+      setIsLoading(false)
+      if (isSuccessful === undefined) {
+        setError('Invalid credentials')
+      }
     }
   }
 
@@ -32,46 +40,33 @@ export default function login() {
   return (
     <div className='flex flex-col items-center justify-center gap-1 min-h-screen'>
       <form className='flex flex-col w-2/4 gap-3'>
-        <TextInput
+        <TextField
           id='11'
-          placeholder='Your email'
-          error=''
-          label='Enter your email'
-          required
+          variant='filled'
+          label='Username'
+          error={!!error}
           value={credentials.username}
           onChange={(e) =>
             setCredentials({ ...credentials, username: e.target.value })
           }
         />
-        <PasswordInput
-          placeholder='Password'
-          required
+        <TextField
           label='Password'
           id='12'
+          variant='filled'
+          type='password'
+          error={!!error}
           value={credentials.password}
           onChange={(e) =>
             setCredentials({ ...credentials, password: e.target.value })
           }
         />
+        <p className='text-center text-red-600'>{error}</p>
+        <Button loading={isLoading} onClick={loginhandler}>
+          Log in
+        </Button>
       </form>
-      <Button
-        variant='subtle'
-        color='gray'
-        radius='xs'
-        size='md'
-        uppercase
-        onClick={loginhandler}
-      >
-        Log in
-      </Button>
-      <Button
-        variant='subtle'
-        color='teal'
-        radius='xs'
-        size='xs'
-        compact
-        onClick={() => router.push('/auth/register')}
-      >
+      <Button onClick={() => router.push('/auth/register')}>
         Dont have an existing account?
       </Button>
     </div>

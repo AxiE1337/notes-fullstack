@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@mantine/core'
+import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { onAuth } from '../lib/onAuth'
 
@@ -16,45 +16,17 @@ export default function Navbar({ isLoggedIn, user }: Props) {
 
   return (
     <div className='flex items-center justify-between w-sceen h-10 bg-gradient-to-r from-indigo-300'>
-      <Button
-        variant='subtle'
-        color='dark'
-        radius='xs'
-        compact
-        uppercase
-        className='ml-3'
-        onClick={() => router.push('/')}
-      >
+      <Button className='ml-3' onClick={() => router.push('/')}>
         Notes
       </Button>
 
-      <div className='flex mr-4'>
-        <h1 className='mr-4 select-none'>{user.username}</h1>
+      <div className='flex mr-4 items-center'>
+        {isLoggedIn && <h1 className='mr-4 select-none'>{user.username}</h1>}
 
         {!isLoggedIn && (
-          <Button
-            variant='subtle'
-            color='dark'
-            radius='xs'
-            compact
-            uppercase
-            onClick={() => router.push('/auth/login')}
-          >
-            Log in
-          </Button>
+          <Button onClick={() => router.push('/auth/login')}>Log in</Button>
         )}
-        {isLoggedIn && (
-          <Button
-            variant='subtle'
-            color='dark'
-            radius='xs'
-            compact
-            uppercase
-            onClick={() => logout()}
-          >
-            Log out
-          </Button>
-        )}
+        {isLoggedIn && <Button onClick={() => logout()}>Log out</Button>}
       </div>
     </div>
   )

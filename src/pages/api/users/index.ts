@@ -6,9 +6,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  let authorization = req.headers.cookie
+  let authorization = req.headers.cookie?.slice(4)
 
-  const decodedToken = jwt.decode(authorization?.slice(4) as string) as {
+  jwt.verify(authorization as string, process.env.JWT_SECRET as string)
+
+  const decodedToken = jwt.decode(authorization as string) as {
     [key: string]: string
   }
 
