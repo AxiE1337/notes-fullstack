@@ -66,9 +66,7 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    return () => {
-      fetch()
-    }
+    fetch()
   }, [])
 
   if (loadingState.isLoading) {

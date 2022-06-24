@@ -11,9 +11,7 @@ export default function MyApp({
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    return () => {
-      isAuthenticated()
-    }
+    isAuthenticated()
   }, [])
 
   return (
