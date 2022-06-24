@@ -21,7 +21,6 @@ const Home: NextPage = () => {
     addBtn: false,
     deleteBtn: false,
   })
-  // const [sortValue, setSortValue] = useState<string>('order')
   const [notes, setNotes] = useState<any[]>([])
   const isLoggedIn = useStore((state) => state.isLoggedIn)
   const [inputTitle, setInputTitle] = useState<string>('')
@@ -93,6 +92,7 @@ const Home: NextPage = () => {
           <TextField
             variant='standard'
             label='Content'
+            multiline
             value={inputContent}
             onChange={(e: any) => setInputContent(e.target.value)}
           />

@@ -46,12 +46,17 @@ export default function Note({
         <h1>Editing</h1>
         <TextField
           placeholder='Title'
+          id='31231242'
           value={titleValue}
           onChange={(e: any) => setTitleValue(e.target.value)}
         />
         <TextField
           placeholder='Content'
-          value={contentValue}
+          id='321312'
+          value={contentValue
+            .replace(/<(\/*)p[^>]*>/g, '')
+            .replace(/<(\/*)br[^>]*>/g, '\n')}
+          multiline
           onChange={(e: any) => setContentValue(e.target.value)}
         />
         {!isChanged ? (
@@ -68,9 +73,14 @@ export default function Note({
   return (
     <div className='flex flex-col gap-2 p-4 mt-4 bg-zinc-300 w-full'>
       <h1 className='text-3xl'>{note.title}</h1>
-      <p className='break-words'>{note.content}</p>
+      <p
+        className='break-words'
+        dangerouslySetInnerHTML={{
+          __html: '<p>' + note.content.replaceAll('\n', '<br>') + '</p>',
+        }}
+      />
       <p>
-        {'Created '} <Moment format='YYYY/MM/DD'>{note.createdAt}</Moment>
+        {'Created at '} <Moment format='YYYY/MM/DD'>{note.createdAt}</Moment>
       </p>
       {!isUpdated && (
         <p className='text-xs'>
