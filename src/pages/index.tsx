@@ -100,7 +100,9 @@ const Home: NextPage = () => {
             className='mt-3'
             loading={loadingState.addBtn}
             onClick={addHandler}
-            disabled={!isLoggedIn}
+            disabled={
+              !isLoggedIn || loadingState.deleteBtn || loadingState.editBtn
+            }
           >
             add
           </Button>

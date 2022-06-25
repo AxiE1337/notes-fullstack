@@ -1,8 +1,14 @@
-import { TextField, IconButton, CircularProgress } from '@mui/material'
+import {
+  TextField,
+  IconButton,
+  CircularProgress,
+  LinearProgress,
+} from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
 import DeleteIcon from '@mui/icons-material/Delete'
 import React, { useState } from 'react'
 import Moment from 'react-moment'
+import ConfirmModal from './confirmModal'
 
 interface NoteTypes {
   note: {
@@ -30,6 +36,7 @@ export default function Note({
   const [edit, setEdit] = useState<boolean>(false)
   const [titleValue, setTitleValue] = useState<string>(note.title)
   const [contentValue, setContentValue] = useState<string>(note.content)
+  const [openModal, setOpenModal] = useState<boolean>(false)
   const isUpdated = note.createdAt.slice(0, 16) === note.updatedAt.slice(0, 16)
 
   const updateHandler = () => {
@@ -39,11 +46,21 @@ export default function Note({
     }
   }
 
+  const deleteHandler = () => {
+    setOpenModal(true)
+  }
+  const confirmDelete = () => {
+    deleteNote(note.id)
+  }
+
   if (edit) {
     const isChanged = note.title === titleValue && note.content === contentValue
     return (
-      <div className='flex flex-col gap-2 pl-10 p-4 mt-4 bg-zinc-300 w-full'>
-        <h1>Editing</h1>
+      <div className='flex flex-col gap-2 p-4 mt-4 bg-zinc-300 w-full'>
+        <div className='flex flex-col'>
+          <h1>Editing...</h1>
+          <LinearProgress />
+        </div>
         <TextField
           placeholder='Title'
           id='31231242'
@@ -99,11 +116,7 @@ export default function Note({
         >
           edit
         </Button>
-        <IconButton
-          className='mt-3'
-          color='error'
-          onClick={() => deleteNote(note.id)}
-        >
+        <IconButton className='mt-3' color='error' onClick={deleteHandler}>
           {loadingState.deleteBtn ? (
             <CircularProgress color='inherit' size={15} />
           ) : (
@@ -111,6 +124,11 @@ export default function Note({
           )}
         </IconButton>
       </div>
+      <ConfirmModal
+        openModal={openModal}
+        setOpenModal={(isOpen: boolean) => setOpenModal(isOpen)}
+        confirmDelete={confirmDelete}
+      />
     </div>
   )
 }
