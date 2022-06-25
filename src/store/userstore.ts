@@ -12,6 +12,6 @@ export const useStore = create<userData>()((set) => ({
   isLoggedIn: false,
 
   setUser: (payload: any) => set((state) => ({ user: (state.user = payload) })),
-  setIsLoggedIn: (payload: any) =>
+  setIsLoggedIn: (payload: boolean) =>
     set((state) => ({ isLoggedIn: (state.isLoggedIn = payload) })),
 }))

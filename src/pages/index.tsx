@@ -73,7 +73,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen'>
+    <div className='flex flex-col items-center justify-center min-h-screen dark:bg-slate-800 dark:text-gray-300'>
       <Head>
         <title>Notes</title>
         <meta name='description' content='Notes app' />
@@ -81,8 +81,8 @@ const Home: NextPage = () => {
       </Head>
       <h1 className='text-3xl font-bold mt-2'>Notes</h1>
 
-      <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 md:w-4/5 border'>
-        <form className='flex flex-col w-full gap-2 p-2'>
+      <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 md:w-4/5 dark:bg-slate-600'>
+        <form className='flex flex-col w-full gap-2 p-2 border'>
           <TextField
             variant='standard'
             label='Title'

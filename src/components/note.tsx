@@ -56,7 +56,7 @@ export default function Note({
   if (edit) {
     const isChanged = note.title === titleValue && note.content === contentValue
     return (
-      <div className='flex flex-col gap-2 p-4 mt-4 bg-zinc-300 w-full'>
+      <div className='flex flex-col gap-2 p-4 mt-4 bg-indigo-200 w-full shadow-xl'>
         <div className='flex flex-col'>
           <h1>Editing...</h1>
           <LinearProgress />
@@ -88,7 +88,7 @@ export default function Note({
   }
 
   return (
-    <div className='flex flex-col gap-2 p-4 mt-4 bg-zinc-300 w-full'>
+    <div className='flex flex-col gap-2 p-4 mt-4 bg-indigo-200 w-full shadow-xl dark:bg-slate-700'>
       <h1 className='text-3xl'>{note.title}</h1>
       <p
         className='break-words'
