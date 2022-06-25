@@ -13,8 +13,14 @@ export default function Navbar({ isLoggedIn, user }: Props) {
   const router = useRouter()
 
   return (
-    <div className='flex items-center justify-between w-sceen h-10 bg-gradient-to-r from-indigo-300'>
-      <Button className='ml-2' onClick={() => router.push('/')}>
+    <div className='flex items-center justify-between w-sceen h-10 bg-indigo-200 dark:bg-slate-900 dark:text-gray-300'>
+      <Button
+        sx={{
+          color: 'inherit',
+        }}
+        className='ml-2'
+        onClick={() => router.push('/')}
+      >
         Notes
       </Button>
 
@@ -25,12 +31,19 @@ export default function Navbar({ isLoggedIn, user }: Props) {
             alt='A'
             sx={{ bgcolor: 'green', width: 30, height: 30 }}
           >
-            {user.username[0]}
+            {user?.username[0]}
           </Avatar>
         )}
         {isLoggedIn && <Dashboard isLoggedIn={isLoggedIn} />}
         {!isLoggedIn && (
-          <Button onClick={() => router.push('/auth/login')}>Log in</Button>
+          <Button
+            sx={{
+              color: 'inherit',
+            }}
+            onClick={() => router.push('/auth/login')}
+          >
+            Log in
+          </Button>
         )}
       </div>
     </div>

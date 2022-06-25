@@ -33,7 +33,13 @@ export default function Dashboard({ isLoggedIn }: DashboardProps) {
 
   return (
     <div>
-      <Button id='basic-button' onClick={handleClick}>
+      <Button
+        sx={{
+          color: 'inherit',
+        }}
+        id='basic-button'
+        onClick={handleClick}
+      >
         Dashboard
       </Button>
       <Menu

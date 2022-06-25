@@ -1,4 +1,4 @@
-import { TextField } from '@mui/material'
+import { CustomTextField } from '../../ui/customTextField'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
@@ -80,9 +80,9 @@ export default function Register() {
   }
 
   return (
-    <div className='flex flex-col min-h-screen items-center justify-center gap-1'>
+    <div className='flex flex-col min-h-screen items-center justify-center gap-1 dark:bg-slate-800 dark:text-gray-300'>
       <form className='flex flex-col w-2/4 md:w-4/5 gap-3'>
-        <TextField
+        <CustomTextField
           label='Enter your username'
           variant='filled'
           id='16'
@@ -91,7 +91,7 @@ export default function Register() {
             setCredentials({ ...credentials, username: e.target.value })
           }
         />
-        <TextField
+        <CustomTextField
           label='Password'
           variant='filled'
           type='password'
@@ -101,7 +101,7 @@ export default function Register() {
             setCredentials({ ...credentials, password: e.target.value })
           }
         />
-        <TextField
+        <CustomTextField
           label='Confirm password'
           type='password'
           variant='filled'
@@ -112,11 +112,22 @@ export default function Register() {
           }
         />
         <p>{error.message}</p>
-        <Button loading={isLoading} onClick={registerHandler}>
+        <Button
+          sx={{
+            color: 'inherit',
+          }}
+          loading={isLoading}
+          onClick={registerHandler}
+        >
           Register
         </Button>
       </form>
-      <Button onClick={() => router.push('/auth/login')}>
+      <Button
+        sx={{
+          color: 'inherit',
+        }}
+        onClick={() => router.push('/auth/login')}
+      >
         have an existing account?
       </Button>
     </div>

@@ -1,4 +1,4 @@
-import { TextField } from '@mui/material'
+import { CustomTextField } from '../../ui/customTextField'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
@@ -38,9 +38,9 @@ export default function Login() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center gap-1 min-h-screen'>
+    <div className='flex flex-col items-center justify-center gap-1 min-h-screen dark:bg-slate-800 dark:text-gray-300'>
       <form className='flex flex-col w-2/4 md:w-4/5 gap-3'>
-        <TextField
+        <CustomTextField
           id='11'
           variant='filled'
           label='Username'
@@ -50,7 +50,7 @@ export default function Login() {
             setCredentials({ ...credentials, username: e.target.value })
           }
         />
-        <TextField
+        <CustomTextField
           label='Password'
           id='12'
           variant='filled'
@@ -62,11 +62,22 @@ export default function Login() {
           }
         />
         <p className='text-center text-red-600'>{error}</p>
-        <Button loading={isLoading} onClick={loginhandler}>
+        <Button
+          sx={{
+            color: 'inherit',
+          }}
+          loading={isLoading}
+          onClick={loginhandler}
+        >
           Log in
         </Button>
       </form>
-      <Button onClick={() => router.push('/auth/register')}>
+      <Button
+        sx={{
+          color: 'inherit',
+        }}
+        onClick={() => router.push('/auth/register')}
+      >
         Dont have an existing account?
       </Button>
     </div>

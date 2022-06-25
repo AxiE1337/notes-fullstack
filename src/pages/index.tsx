@@ -1,9 +1,10 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { TextField, CircularProgress } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
 import { useEffect, useState } from 'react'
 import { useStore } from '../store/userstore'
+import { CustomTextField } from '../ui/customTextField'
 import manageNotes from '../lib/manageNotes'
 import Note from '../components/note'
 
@@ -27,7 +28,7 @@ const Home: NextPage = () => {
   const [inputContent, setInputContent] = useState<string>('')
 
   const loading = (
-    <div className='flex h-screen items-center justify-center'>
+    <div className='flex h-screen items-center justify-center dark:bg-slate-800'>
       <CircularProgress />
     </div>
   )
@@ -73,7 +74,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen dark:bg-slate-800 dark:text-gray-300'>
+    <div className='flex flex-col items-center justify-center min-h-screen text-gray-700 dark:bg-slate-800 dark:text-gray-300'>
       <Head>
         <title>Notes</title>
         <meta name='description' content='Notes app' />
@@ -82,14 +83,14 @@ const Home: NextPage = () => {
       <h1 className='text-3xl font-bold mt-2'>Notes</h1>
 
       <div className='flex flex-col items-center justify-center mt-4 min-h-1/2 w-1/2 md:w-4/5 dark:bg-slate-600'>
-        <form className='flex flex-col w-full gap-2 p-2 border'>
-          <TextField
+        <form className='flex flex-col w-full gap-2 p-2 border dark:border-0'>
+          <CustomTextField
             variant='standard'
             label='Title'
             value={inputTitle}
             onChange={(e: any) => setInputTitle(e.target.value)}
           />
-          <TextField
+          <CustomTextField
             variant='standard'
             label='Content'
             multiline
@@ -97,6 +98,9 @@ const Home: NextPage = () => {
             onChange={(e: any) => setInputContent(e.target.value)}
           />
           <Button
+            sx={{
+              color: 'inherit',
+            }}
             className='mt-3'
             loading={loadingState.addBtn}
             onClick={addHandler}

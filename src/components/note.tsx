@@ -1,10 +1,6 @@
-import {
-  TextField,
-  IconButton,
-  CircularProgress,
-  LinearProgress,
-} from '@mui/material'
+import { IconButton, CircularProgress, LinearProgress } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
+import { CustomTextField } from '../ui/customTextField'
 import DeleteIcon from '@mui/icons-material/Delete'
 import React, { useState } from 'react'
 import Moment from 'react-moment'
@@ -56,18 +52,18 @@ export default function Note({
   if (edit) {
     const isChanged = note.title === titleValue && note.content === contentValue
     return (
-      <div className='flex flex-col gap-2 p-4 mt-4 bg-indigo-200 w-full shadow-xl'>
+      <div className='flex flex-col gap-2 p-4 mt-4 bg-indigo-200 w-full shadow-xl dark:bg-slate-600 dark:text-gray-300'>
         <div className='flex flex-col'>
           <h1>Editing...</h1>
           <LinearProgress />
         </div>
-        <TextField
+        <CustomTextField
           placeholder='Title'
           id='31231242'
           value={titleValue}
           onChange={(e: any) => setTitleValue(e.target.value)}
         />
-        <TextField
+        <CustomTextField
           placeholder='Content'
           id='321312'
           value={contentValue
@@ -77,11 +73,24 @@ export default function Note({
           onChange={(e: any) => setContentValue(e.target.value)}
         />
         {!isChanged ? (
-          <Button className='mt-3' onClick={updateHandler}>
+          <Button
+            sx={{
+              color: 'inherit',
+            }}
+            className='mt-3'
+            onClick={updateHandler}
+          >
             update
           </Button>
         ) : (
-          <Button onClick={() => setEdit(false)}>Close</Button>
+          <Button
+            sx={{
+              color: 'inherit',
+            }}
+            onClick={() => setEdit(false)}
+          >
+            Close
+          </Button>
         )}
       </div>
     )
@@ -110,6 +119,9 @@ export default function Note({
       )}
       <div className='ml-auto'>
         <Button
+          sx={{
+            color: 'inherit',
+          }}
           className='mt-3'
           loading={loadingState.editBtn}
           onClick={() => setEdit((prev) => !prev)}
