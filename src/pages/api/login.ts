@@ -22,10 +22,10 @@ export default async function handler(
     const jwtoken = jwt.sign(
       { id, username },
       process.env.JWT_SECRET as string,
-      { expiresIn: 60 * 60 }
+      { expiresIn: 80 * 80 }
     )
 
-    setCookies('jwt', jwtoken, { req, res, maxAge: 60 * 6 * 24 })
+    setCookies('jwt', jwtoken, { req, res, maxAge: 80 * 80 })
 
     return res.status(200).json({
       token: jwtoken,

@@ -61,7 +61,12 @@ export const useAuth = () => {
           'Content-Type': 'application/json',
         },
       })
-      setUser(data.data)
+      const userData = data.data
+      if (!userData) {
+        setIsLoggedIn(false)
+        return userData
+      }
+      setUser(userData)
       setIsLoggedIn(true)
       router.push('/')
     } catch (err) {
@@ -73,6 +78,14 @@ export const useAuth = () => {
     setIsLoggedIn(false)
     router.push('/auth/login')
   }
+  const deleteUser = async () => {
+    try {
+      await axios.delete('/api/users')
+      logout()
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
-  return { register, login, isAuthenticated, logout }
+  return { register, login, isAuthenticated, logout, deleteUser }
 }
