@@ -1,16 +1,13 @@
 import { Avatar, Button } from '@mui/material'
 import { useRouter } from 'next/router'
+import { trpc } from '../utils/trpc'
 import Dashboard from './dashboard'
 
-interface Props {
-  isLoggedIn: boolean
-  user: {
-    username: string
-  }
-}
-
-export default function Navbar({ isLoggedIn, user }: Props) {
+export default function Navbar() {
   const router = useRouter()
+  const isAuth = trpc.useQuery(['auth.get'])
+  const isLoggedIn = isAuth.data?.isAuthenticated as boolean
+  const username = isAuth.data?.username as string
 
   return (
     <div className='flex items-center justify-between w-sceen h-10 bg-indigo-200 dark:bg-slate-900 dark:text-gray-300'>
@@ -31,7 +28,7 @@ export default function Navbar({ isLoggedIn, user }: Props) {
             alt='A'
             sx={{ bgcolor: 'green', width: 30, height: 30 }}
           >
-            {user?.username[0]}
+            {username[0]}
           </Avatar>
         )}
         {isLoggedIn && <Dashboard isLoggedIn={isLoggedIn} />}

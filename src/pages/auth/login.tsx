@@ -1,9 +1,8 @@
 import { CustomTextField } from '../../ui/customTextField'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
-import { useStore } from '../../store/userstore'
+import { trpc } from '../../utils/trpc'
 
 interface Credentials {
   username: string
@@ -15,25 +14,29 @@ export default function Login() {
     username: '',
     password: '',
   })
-  const { login } = useAuth()
-  const isLoggedIn = useStore((state) => state.isLoggedIn)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
   const router = useRouter()
+  const auth = trpc.useMutation(['auth.login'], {
+    onSuccess() {
+      router.push('/')
+    },
+  })
+  const isAuth = trpc.useQuery(['auth.get'])
 
   const loginhandler = async () => {
     if (credentials.username !== '' && credentials.password !== '') {
-      setIsLoading(true)
-      const isSuccessful = await login(credentials)
+      auth.mutateAsync({
+        username: credentials.username,
+        password: credentials.password,
+      })
       setCredentials({ username: '', password: '' })
-      setIsLoading(false)
-      if (isSuccessful === undefined) {
+      if (!auth.data?.credentials) {
         setError('Invalid credentials')
       }
     }
   }
 
-  if (isLoggedIn) {
+  if (isAuth.data?.isAuthenticated) {
     router.push('/')
   }
 
@@ -66,7 +69,7 @@ export default function Login() {
           sx={{
             color: 'inherit',
           }}
-          loading={isLoading}
+          loading={auth.isLoading}
           onClick={loginhandler}
         >
           Log in

@@ -1,9 +1,8 @@
 import { CustomTextField } from '../../ui/customTextField'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
-import { useStore } from '../../store/userstore'
 import { useRouter } from 'next/router'
+import { trpc } from '../../utils/trpc'
 
 interface Credentials {
   username: string
@@ -23,15 +22,18 @@ export default function Register() {
     password: '',
     password2: '',
   })
-  const { register } = useAuth()
-  const isLoggedIn = useStore((state) => state.isLoggedIn)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>({
     message: '',
     passMatch: true,
     passLength: false,
     userLength: false,
   })
+  const register = trpc.useMutation('auth.register', {
+    onSuccess() {
+      router.reload()
+    },
+  })
+  const isAuth = trpc.useQuery(['auth.get'])
   const router = useRouter()
 
   const registerHandler = async () => {
@@ -41,8 +43,10 @@ export default function Register() {
       credentials.password.length > 5 &&
       confirmed
     ) {
-      setIsLoading(true)
-      await register(credentials)
+      register.mutateAsync({
+        username: credentials.username,
+        password: credentials.password,
+      })
       setError({
         message: '',
         passMatch: true,
@@ -54,7 +58,6 @@ export default function Register() {
         password: '',
         password2: '',
       })
-      setIsLoading(false)
     } else {
       const passMatch = !confirmed ? 'Passwords doesnt match!' : ''
       const userLength =
@@ -74,7 +77,7 @@ export default function Register() {
     }
   }
 
-  if (isLoggedIn) {
+  if (isAuth.data?.isAuthenticated) {
     router.push('/')
     return <div></div>
   }
@@ -116,7 +119,7 @@ export default function Register() {
           sx={{
             color: 'inherit',
           }}
-          loading={isLoading}
+          loading={register.isLoading}
           onClick={registerHandler}
         >
           Register

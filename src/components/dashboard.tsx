@@ -1,9 +1,10 @@
 import { MenuItem, Menu } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
 import { MuiSwitch } from '../ui/muiSwitch'
 import { useStore } from '../store/themestore'
+import { trpc } from '../utils/trpc'
+import { useRouter } from 'next/router'
 
 interface DashboardProps {
   isLoggedIn: boolean
@@ -12,11 +13,20 @@ interface DashboardProps {
 export default function Dashboard({ isLoggedIn }: DashboardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popOver, setPopOver] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
   const open = Boolean(anchorEl)
-  const { logout, deleteUser } = useAuth()
   const setTheme = useStore((state) => state.setTheme)
   const theme = useStore((state) => state.theme)
+  const router = useRouter()
+  const logout = trpc.useMutation('auth.logout', {
+    onSuccess() {
+      router.push('/auth/login')
+    },
+  })
+  const deleteUser = trpc.useMutation('auth.deleteUser', {
+    onSuccess() {
+      router.push('/auth/login')
+    },
+  })
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -30,9 +40,10 @@ export default function Dashboard({ isLoggedIn }: DashboardProps) {
   }
 
   const handelDelete = async () => {
-    setIsLoading(true)
-    await deleteUser()
-    setIsLoading(false)
+    deleteUser.mutateAsync()
+  }
+  const handleLogout = () => {
+    logout.mutateAsync()
   }
 
   if (theme) {
@@ -73,13 +84,17 @@ export default function Dashboard({ isLoggedIn }: DashboardProps) {
             <p className='text-sm mx-2 mt-1 text-center'>
               User and notes will be deleted!
             </p>
-            <Button loading={isLoading} color='error' onClick={handelDelete}>
+            <Button
+              loading={deleteUser.isLoading}
+              color='error'
+              onClick={handelDelete}
+            >
               Confirm Delete
             </Button>
           </div>
         )}
         {isLoggedIn && (
-          <MenuItem className='justify-center' onClick={() => logout()}>
+          <MenuItem className='justify-center' onClick={handleLogout}>
             Log out
           </MenuItem>
         )}

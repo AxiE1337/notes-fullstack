@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @unique
+  id        String   @id @default(cuid())
   username String @unique @db.VarChar(20)
   password String @db.VarChar(20)
   notes    Note[]
@@ -20,6 +20,6 @@ model Note {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
 }

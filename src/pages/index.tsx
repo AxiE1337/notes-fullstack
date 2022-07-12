@@ -2,30 +2,55 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { CircularProgress } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
-import { useEffect, useState } from 'react'
-import { useStore } from '../store/userstore'
+import { useState } from 'react'
 import { CustomTextField } from '../ui/customTextField'
-import manageNotes from '../lib/manageNotes'
 import Note from '../components/note'
-
-interface LoadingState {
-  isLoading: boolean
-  addBtn: boolean
-  editBtn: boolean
-  deleteBtn: boolean
-}
+import { trpc } from '../utils/trpc'
+import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
-  const [loadingState, setLoadingState] = useState<LoadingState>({
-    isLoading: true,
-    editBtn: false,
-    addBtn: false,
-    deleteBtn: false,
-  })
-  const [notes, setNotes] = useState<any[]>([])
-  const isLoggedIn = useStore((state) => state.isLoggedIn)
   const [inputTitle, setInputTitle] = useState<string>('')
   const [inputContent, setInputContent] = useState<string>('')
+  const router = useRouter()
+  const utils = trpc.useContext()
+  const notes = trpc.useQuery(['notes.get'])
+  const isAuth = trpc.useQuery(['auth.get'])
+  const addNote = trpc.useMutation(['notes.add'], {
+    onSuccess() {
+      utils.invalidateQueries('notes.get')
+    },
+  })
+  const deleteNote = trpc.useMutation(['notes.delete'], {
+    onSuccess() {
+      utils.invalidateQueries('notes.get')
+    },
+  })
+  const updateNote = trpc.useMutation(['notes.update'], {
+    onSuccess() {
+      utils.invalidateQueries('notes.get')
+    },
+  })
+
+  const addHandler = async () => {
+    const maxLength = inputTitle.length > 15
+    if (inputTitle.length > 1 && !maxLength && inputContent.length > 5) {
+      addNote.mutateAsync({ title: inputTitle, content: inputContent })
+      setInputTitle('')
+      setInputContent('')
+    }
+  }
+
+  const deleteNoteHandler = async (id: number) => {
+    deleteNote.mutateAsync({ id: id })
+  }
+
+  const updateNoteHandler = async (
+    id: number,
+    title: string,
+    content: string
+  ) => {
+    updateNote.mutateAsync({ id: id, title: title, content })
+  }
 
   const loading = (
     <div className='flex h-screen items-center justify-center dark:bg-slate-800'>
@@ -33,44 +58,11 @@ const Home: NextPage = () => {
     </div>
   )
 
-  const fetch = async () => {
-    const data = await manageNotes.get()
-    setNotes(data)
-    setLoadingState({ ...loadingState, isLoading: false })
-  }
-
-  const addHandler = async () => {
-    const maxLength = inputTitle.length > 15
-    if (inputTitle.length > 1 && !maxLength && inputContent.length > 5) {
-      setLoadingState({ ...loadingState, addBtn: true })
-      const data = await manageNotes.add(inputTitle, inputContent)
-      setNotes(data)
-      setInputTitle('')
-      setInputContent('')
-      setLoadingState({ ...loadingState, addBtn: false })
-    }
-  }
-
-  const deleteNote = async (id: number) => {
-    setLoadingState({ ...loadingState, deleteBtn: true })
-    const data = await manageNotes.delete(id)
-    setNotes(data)
-    setLoadingState({ ...loadingState, deleteBtn: false })
-  }
-
-  const updateNote = async (id: number, title: string, content: string) => {
-    setLoadingState({ ...loadingState, editBtn: true })
-    const data = await manageNotes.udpate(id, title, content)
-    setNotes(data)
-    setLoadingState({ ...loadingState, editBtn: false })
-  }
-
-  useEffect(() => {
-    fetch()
-  }, [])
-
-  if (loadingState.isLoading) {
+  if (notes.isLoading) {
     return loading
+  }
+  if (!isAuth.data?.isAuthenticated) {
+    router.push('/auth/login')
   }
 
   return (
@@ -102,29 +94,31 @@ const Home: NextPage = () => {
               color: 'inherit',
             }}
             className='mt-3'
-            loading={loadingState.addBtn}
+            loading={addNote.isLoading}
             onClick={addHandler}
             disabled={
-              !isLoggedIn || loadingState.deleteBtn || loadingState.editBtn
+              !isAuth?.data?.isAuthenticated ||
+              deleteNote.isLoading ||
+              updateNote.isLoading
             }
           >
             add
           </Button>
         </form>
         <div className='flex flex-col items-start justify-start w-full'>
-          {notes
-            .sort((a: any, b: any) => b.id - a.id)
+          {notes.data
+            ?.sort((a: any, b: any) => b.id - a.id)
             .map((note: any) => (
               <Note
                 key={note.id}
                 note={note}
                 loadingState={{
-                  editBtn: loadingState.editBtn,
-                  deleteBtn: loadingState.deleteBtn,
+                  editBtn: updateNote.isLoading,
+                  deleteBtn: deleteNote.isLoading,
                 }}
-                deleteNote={(noteId) => deleteNote(noteId)}
+                deleteNote={(noteId) => deleteNoteHandler(noteId)}
                 updateNote={(noteId, title, content) =>
-                  updateNote(noteId, title, content)
+                  updateNoteHandler(noteId, title, content)
                 }
               />
             ))}
