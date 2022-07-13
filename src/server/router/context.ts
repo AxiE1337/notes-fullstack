@@ -16,19 +16,18 @@ export const createContext = (opts?: trpcNext.CreateNextContextOptions) => {
   const res = opts?.res
 
   const decodeToken = (token: string) => {
-    const isValid = verify(token as string, process.env.JWT_SECRET as string)
-
-    if (!isValid) {
+    try {
+      verify(token as string, process.env.JWT_SECRET as string)
+      const decodedToken = decode(token) as IToken
+      return {
+        id: decodedToken.id,
+        username: decodedToken.username,
+        isValid: true,
+      }
+    } catch (e) {
       return {
         isValid: false,
       }
-    }
-    const decodedToken = decode(token) as IToken
-
-    return {
-      id: decodedToken.id,
-      username: decodedToken.username,
-      isValid: true,
     }
   }
   const signToken = (id: string, username: string) => {

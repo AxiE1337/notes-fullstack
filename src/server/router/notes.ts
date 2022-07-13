@@ -6,7 +6,9 @@ export const notes = createRouter()
     async resolve({ ctx }) {
       const token = ctx.req?.headers.cookie?.slice(4)
       const decodedToken = ctx.decodeToken(token as string)
-
+      if (!decodedToken.isValid) {
+        return
+      }
       return await ctx.prisma.note.findMany({
         where: {
           userId: decodedToken?.id,

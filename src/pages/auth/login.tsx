@@ -19,9 +19,11 @@ export default function Login() {
   const auth = trpc.useMutation(['auth.login'], {
     onSuccess() {
       router.push('/')
+      router.reload()
     },
   })
   const isAuth = trpc.useQuery(['auth.get'])
+  console.log(auth.data?.credentials)
 
   const loginhandler = async () => {
     if (credentials.username !== '' && credentials.password !== '') {

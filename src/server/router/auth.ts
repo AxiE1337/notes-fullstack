@@ -66,8 +66,8 @@ export const auth = createRouter()
   .query('get', {
     async resolve({ ctx }) {
       const token = ctx.req?.headers.cookie?.slice(4)
-      if (token) {
-        const decodeToken = ctx.decodeToken(token as string)
+      const decodeToken = ctx.decodeToken(token as string)
+      if (decodeToken.isValid) {
         const user = await ctx.prisma.user.findFirst({
           where: { id: decodeToken?.id } as object,
         })
