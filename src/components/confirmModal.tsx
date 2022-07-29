@@ -1,4 +1,5 @@
-import { Box, Modal, Button } from '@mui/material'
+import { Modal, Button } from '@mui/material'
+import { memo } from 'react'
 
 interface Modal {
   openModal: boolean
@@ -13,11 +14,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
 }
 
-export default function ConfirmModal({
-  openModal,
-  setOpenModal,
-  confirmDelete,
-}: Modal) {
+function ConfirmModal({ openModal, setOpenModal, confirmDelete }: Modal) {
   const handleClose = () => {
     setOpenModal(false)
   }
@@ -52,3 +49,4 @@ export default function ConfirmModal({
     </>
   )
 }
+export default memo(ConfirmModal)

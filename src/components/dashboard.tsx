@@ -1,6 +1,6 @@
 import { MenuItem, Menu } from '@mui/material'
 import { LoadingButton as Button } from '@mui/lab'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { MuiSwitch } from '../ui/muiSwitch'
 import { useStore } from '../store/themestore'
 import { trpc } from '../utils/trpc'
@@ -10,7 +10,7 @@ interface DashboardProps {
   isLoggedIn: boolean
 }
 
-export default function Dashboard({ isLoggedIn }: DashboardProps) {
+function Dashboard({ isLoggedIn }: DashboardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [popOver, setPopOver] = useState<boolean>(false)
   const open = Boolean(anchorEl)
@@ -102,3 +102,4 @@ export default function Dashboard({ isLoggedIn }: DashboardProps) {
     </div>
   )
 }
+export default memo(Dashboard)

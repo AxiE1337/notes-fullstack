@@ -3,6 +3,7 @@ import { LoadingButton as Button } from '@mui/lab'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { trpc } from '../../utils/trpc'
+import { debounce } from '../../utils/debounce'
 
 interface Credentials {
   username: string
@@ -77,6 +78,19 @@ export default function Register() {
     }
   }
 
+  const usernameInput = debounce(
+    (e: any) => setCredentials({ ...credentials, username: e.target.value }),
+    500
+  )
+  const passwordInput1 = debounce(
+    (e: any) => setCredentials({ ...credentials, password: e.target.value }),
+    500
+  )
+  const passwordInput2 = debounce(
+    (e: any) => setCredentials({ ...credentials, password2: e.target.value }),
+    500
+  )
+
   if (isAuth.data?.isAuthenticated) {
     router.push('/')
     return <div></div>
@@ -90,9 +104,7 @@ export default function Register() {
           variant='filled'
           id='16'
           error={error.userLength}
-          onChange={(e: any) =>
-            setCredentials({ ...credentials, username: e.target.value })
-          }
+          onChange={usernameInput}
         />
         <CustomTextField
           label='Password'
@@ -100,9 +112,7 @@ export default function Register() {
           type='password'
           id='17'
           error={error.passLength && error.passMatch}
-          onChange={(e: any) =>
-            setCredentials({ ...credentials, password: e.target.value })
-          }
+          onChange={passwordInput1}
         />
         <CustomTextField
           label='Confirm password'
@@ -110,9 +120,7 @@ export default function Register() {
           variant='filled'
           id='15'
           error={error.passLength && error.passMatch}
-          onChange={(e: any) =>
-            setCredentials({ ...credentials, password2: e.target.value })
-          }
+          onChange={passwordInput2}
         />
         <p>{error.message}</p>
         <Button
